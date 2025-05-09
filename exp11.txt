@@ -1,0 +1,93 @@
+1. Start/stop/restart firewalls
+[root@localhost ~]# systemctl start firewalld
+[root@localhost ~]# systemctl restart firewalld
+[root@localhost ~]# systemctl stop firewalld
+[root@localhost ~]#
+2. Check all exitsting IPtables Firewall Rules
+[root@localhost ~]# iptables -L -n -v
+[root@localhost ~]#
+3. Block specific IP Address(eg. 172.16.8.10) in IPtables Firewall
+[root@localhost ~]# iptables -A INPUT -s 172.16.8.10 -j DROP
+[root@localhost ~]#
+4. Block specifig port on IPtables Firewall
+[root@localhost ~]# iptables -A OUTPUT -p tcp --dport xxx -j DROP
+[root@localhost ~]#
+5. Allow specific network range on particular port on iptables
+[root@localhost ~]# iptables -A OUTPUT -p tcp -d 172.16.8.0/24 --dport xxx -j ACCEPT
+[root@localhost ~]#
+6. Block Facebook on IPTables
+[root@localhost ~]# host facebook.com
+facebook.com has address 157.240.24.35
+facebook.com has IPv6 address 2a03:2880:f10c:283:face:b00c:0:25de
+facebook.com mail is handled by 10 smtpin.vvv.facebook.com.
+7.Whois
+[root@localhost ~]# whois 157.240.24.35 | grep CIDR CIDR: 157.240.0.0/16
+[root@localhost ~]#
+8. Block Access to your system from specific MAC Address(say 0F:22:1E:00:02:30)
+[root@localhost ~]# iptables -A INPUT -m mac --mac-source 0F:22:1E:00:02:30 -j DROP
+[root@localhost ~]#
+9. Save IPtables rules to a file
+[root@localhost ~]# iptables-save > ~/iptables.rules
+[root@localhost ~]# vi iptables.rules
+[root@localhost ~]#
+10. Restrict number of concurrent connections to a Server(Here restrict to 3 connections only)
+[root@localhost ~]# iptables -A INPUT -p tcp --syn --dport 22 -m connlimit --connlimit-above 3 -j REJECT
+11. Disable outgoing mails through IPtables
+[root@localhost ~]# iptables -A OUTPUT -p tcp --dport 25 -j REJECT
+[root@localhost ~]#
+ 12. Flush IPtables Firewall chains or rules
+[root@localhost ~]# iptables -F
+[root@localhost ~]#
+13. Debian/Ubuntu-based systems:
+ sudo apt update
+ sudo apt install iptables
+● Red Hat/CentOS-based systems:
+ sudo yum update
+ sudo yum install iptables
+● Verify Installation:
+ iptables -V
+This command will display the iptables version, confirming successful installation.
+
+3. Basic iptables Commands:
+● Listing Rules:
+sudo iptables -L # Lists rules in the filter table
+sudo iptables -t nat -L # Lists rules in the nat table
+sudo iptables -L -v # Lists rules with more details (verbose)
+sudo iptables -L --line-numbers # Lists rules with line numbers (useful for deleting)
+● Appending a Rule (Adding a rule to the end of a chain):
+sudo iptables -A INPUT -p tcp --dport 80 -j ACCEPT # Allow HTTP traffic
+● -A: Append
+● INPUT: Chain
+● -p tcp: Protocol (tcp, udp, icmp)
+● --dport 80: Destination port (for incoming traffic)
+● -j ACCEPT: Action (ACCEPT, DROP, REJECT)
+● Inserting a Rule (Adding a rule at a specific position):
+sudo iptables -I INPUT 2 -p udp --dport 53 -j ACCEPT 
+
+-I: Insert
+● 2: Line number
+● Deleting a Rule:
+sudo iptables -D INPUT 2 # Delete rule at line 2
+● -D: Delete
+● Flushing all Rules (Clearing all rules in a table):
+sudo iptables -F # Flush the filter table
+● sudo iptables -t nat -F # Flush the nat table
+●
+-F: Flush
+● Saving Rules (M
+sudo iptables-save > /etc/iptables/rules.v4 # Save IPv4 rules (Debian/Ubuntu)
+ sudo iptables-save > /etc/sysconfig/iptables # Save IPv4 rules (Red Hat/CentOS)
+● Restoring Rules (Load saved rules):
+sudo iptables-restore < /etc/iptables/rules.v4 # Restore IPv4 rules (Debian/Ubuntu)
+sudo iptables-restore < /etc/sysconfig/iptables # Restore IPv4 rules (Red Hat/CentOS)
+4. Configuring iptables for Various Options:
+● Allowing SSH traffic:
+ sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+
+Blocking all incoming traffic (except SSH):
+sudo iptables -P INPUT DROP # Set default policy for INPUT chain to DROP
+● Allowing outgoing traffic:
+sudo iptables -P OUTPUT ACCEPT # Set default policy for OUTPUT chain to ACCEPT
+● Allowing specific IP address:
+sudo iptables -A INPUT -s 192.168.1.10 -j ACCEPT
+
